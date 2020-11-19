@@ -1,17 +1,24 @@
 'use strict';
 
-const { Telegraf } = require('telegraf')
-const bot = new Telegraf(process.env.TOKEN)
-
+const { Telegraf } = require('telegraf');
 const express = require('express');
-const app = express();
-const port = process.env.PORT || 3000;
+const expressApp = express();
 
-app.get('/', function(req, res) {
-    res.send('telegram bot');
+const TOKEN = process.env.TOKEN;
+const PORT = process.env.PORT;
+const URL = process.env.URL;
+
+const bot = new Telegraf(TOKEN)
+
+bot.telegram.setWebhook(URL + '/bot')
+expressApp.use(bot.webhookCallback('/bot'));
+
+expressApp.get('/', (req, res) => {
+    res.send('bot');
 });
-
-app.listen(port, () => console.log(`Listening on port ${port}!`));
+expressApp.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+});
 
 const sets = [
     {
@@ -93,7 +100,7 @@ bot.command('result', (ctx) => {
     });
 });
 
-bot.launch();
+//bot.launch();
 
 function getPollResult() {
     const messages = [];
